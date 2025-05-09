@@ -1,0 +1,39 @@
+services:
+  auth_mongodb:
+    image: mongo:latest
+    container_name: auth_mongodb
+    ports:
+      - 27017:27017
+    volumes:
+      - auth_mongodb_data:/data/db
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: root
+    restart: always
+  booking_mongodb:
+    image: mongo:latest
+    container_name: booking_mongodb
+    ports:
+      - 27018:27017
+    volumes:
+      - booking_mongodb_data:/data/db
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: root
+    restart: always
+  concert_mongodb:
+    image: mongo:latest
+    container_name: concert_mongodb
+    ports:
+      - 27019:27017
+    volumes:
+      - concert_mongodb_data:/data/db
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: root
+    restart: always
+
+volumes:
+  auth_mongodb_data:
+  booking_mongodb_data:
+  concert_mongodb_data:
