@@ -1,4 +1,56 @@
 services:
+  concert:
+    build:
+      context: .
+      dockerfile: ./apps/concert/Dockerfile
+    ports:
+      - '3000:3000'
+    command: npm run start:dev concert
+    environment:
+      - CONCERT_PORT=3000
+      - AUTH_PORT=3001
+      - BOOKING_PORT=3002
+      - MONGODB_AUTH_URI=mongodb://root:root@auth_mongodb:27017
+      - MONGODB_BOOKING_URI=mongodb://root:root@booking_mongodb:27017
+      - MONGODB_CONCERT_URI=mongodb://root:root@concert_mongodb:27017
+      - JWT_SECRET=n1H/yqiB4r3mj83Vy3usBUuTUggbLyldfPIXxE3NneRem32Z5JuDQoUxFfcgNoLv8KPwLVDrEOrCCEeiwZdjpw==
+      - JWT_EXPIRES_IN=3600
+      - RABBIT_MQ_URI=amqp://rabbitmq:5672
+      - RABBIT_MQ_CONCERT_QUEUE=CONCERT
+    depends_on:
+      - concert_mongodb
+      - rabbitmq
+    volumes:
+      - .:/usr/src/app
+
+  booking:
+    build:
+      context: .
+      dockerfile: ./apps/booking/Dockerfile
+    ports:
+      - '3002:3002'
+    command: npm run start:dev booking
+    environment:
+      - PORT=3002
+      - MONGODB_BOOKING_URI=mongodb://root:root@booking_mongodb:27017
+      - JWT_SECRET=n1H/yqiB4r3mj83Vy3usBUuTUggbLyldfPIXxE3NneRem32Z5JuDQoUxFfcgNoLv8KPwLVDrEOrCCEeiwZdjpw==
+      - JWT_EXPIRES_IN=3600
+      - RABBIT_MQ_URI=amqp://rabbitmq:5672
+      - RABBIT_MQ_CONCERT_QUEUE=CONCERT
+      - REDIS_HOST=localhost
+      - REDIS_PORT=6379
+    depends_on:
+      - booking_mongodb
+      - rabbitmq
+      - redis
+    volumes:
+      - .:/usr/src/app
+
+  rabbitmq:
+    image: rabbitmq
+    ports:
+      - 5672:5672
+
   auth_mongodb:
     image: mongo:latest
     container_name: auth_mongodb
@@ -10,6 +62,7 @@ services:
       MONGO_INITDB_ROOT_USERNAME: root
       MONGO_INITDB_ROOT_PASSWORD: root
     restart: always
+
   booking_mongodb:
     image: mongo:latest
     container_name: booking_mongodb
@@ -21,6 +74,7 @@ services:
       MONGO_INITDB_ROOT_USERNAME: root
       MONGO_INITDB_ROOT_PASSWORD: root
     restart: always
+
   concert_mongodb:
     image: mongo:latest
     container_name: concert_mongodb
@@ -32,6 +86,24 @@ services:
       MONGO_INITDB_ROOT_USERNAME: root
       MONGO_INITDB_ROOT_PASSWORD: root
     restart: always
+
+  # Redis Service for Booking Service
+  redis:
+    image: redis:latest
+    ports:
+      - '6379:6379'
+    restart: always # Add restart policy
+
+  # API Gateway (Nginx)
+  # api-gateway:
+  #   image: nginx:latest
+  #   ports:
+  #     - '8080:80'
+  #   volumes:
+  #     - ./nginx.conf:/etc/nginx/nginx.conf
+  #   depends_on:
+  #     - app
+  #   restart: always # Add restart policy
 
 volumes:
   auth_mongodb_data:
