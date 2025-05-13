@@ -20,8 +20,8 @@ import { Booking, BookingSchema } from './schemas/booking.schema';
       validationSchema: Joi.object({
         RABBIT_MQ_URI: Joi.string().required(),
         RABBIT_MQ_BOOKING_QUEUE: Joi.string().required(),
-        REDIS_HOST: Joi.string().required(),
-        REDIS_PORT: Joi.string().required(),
+        REDIS_HOST_1: Joi.string().required(),
+        REDIS_PORT_1: Joi.string().required(),
       }),
     }),
     MongooseModule.forRootAsync({

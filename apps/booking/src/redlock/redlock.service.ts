@@ -18,7 +18,7 @@ export class RedlockService implements OnModuleDestroy {
       // Configuration options
       driftFactor: 0.01, // multiplied by lock time to determine the minimum expiration time
       retryCount: 10,
-      retryDelay: 200, // time in ms
+      retryDelay: 500, // time in ms
       retryJitter: 200, // adds 200ms of randomness to retry delay
       automaticExtensionThreshold: 500, // automatically extend locks nearing expiration by this amount in ms.
     });

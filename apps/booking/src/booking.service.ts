@@ -53,7 +53,7 @@ export class BookingService {
       this.logger.debug(seatType);
 
       const existingBooking = await this.bookingRepository.findOne({
-        seatTypeId: seatType._id,
+        seatTypeId: new ObjectId(seatType._id),
       });
       this.logger.debug(existingBooking);
       if (existingBooking) {
