@@ -1,0 +1,3 @@
+export const BOOKING_SERVICE = 'BOOKING';
+export const CONCERT_SERVICE = 'CONCERT';
+export const REDIS_CLIENTS = 'REDIS_CLIENTS';
