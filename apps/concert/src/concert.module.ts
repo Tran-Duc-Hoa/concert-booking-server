@@ -4,7 +4,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 import * as Joi from 'joi';
 
 import { ConcertController } from './concert.controller';
-import { ConcertsRepository } from './concert.repository';
+import { ConcertRepository } from './concert.repository';
 import { ConcertService } from './concert.service';
 import { Concert, ConcertSchema } from './schemas/concert.schema';
 import { SeatTypesModule } from './seat-types/seat-types.module';
@@ -28,6 +28,6 @@ import { SeatTypesModule } from './seat-types/seat-types.module';
     SeatTypesModule,
   ],
   controllers: [ConcertController],
-  providers: [ConcertService, ConcertsRepository],
+  providers: [ConcertService, ConcertRepository],
 })
 export class ConcertModule {}

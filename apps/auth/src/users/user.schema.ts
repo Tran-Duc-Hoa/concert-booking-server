@@ -1,21 +1,16 @@
+import { AbstractDocument } from '@app/common';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { HydratedDocument, SchemaTypes, Types } from 'mongoose';
+import { HydratedDocument } from 'mongoose';
 
 export type UserDocument = HydratedDocument<User>;
 
-@Schema()
-export class User {
-  @Prop({ type: SchemaTypes.ObjectId })
-  _id: Types.ObjectId;
-
+@Schema({ timestamps: true })
+export class User extends AbstractDocument {
   @Prop({ required: true })
   passwordHash: string;
 
   @Prop({ required: true, unique: true })
   email: string;
-
-  @Prop({ default: Date.now })
-  registrationDate: Date;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);

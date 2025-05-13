@@ -11,6 +11,10 @@ import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
 import { UsersService } from './users/users.service';
 
+export interface TokenPayload {
+  userId: string;
+}
+
 @Injectable()
 export class AuthService {
   private readonly logger = new Logger();
@@ -29,19 +33,16 @@ export class AuthService {
         throw new BadRequestException('Email already registered');
       }
 
-      this.logger.debug('payload', existingUserByEmail);
+      this.logger.debug('existingUserByEmail', existingUserByEmail);
       const user = await this.usersService.create({
         email,
         password: password,
       });
 
-      const payload = { userId: user._id };
-      const accessToken = await this.jwtService.signAsync(payload);
-      this.logger.debug('payload', payload);
-      return { accessToken };
+      return user;
     } catch (error) {
       this.logger.debug('error', error);
-      throw new InternalServerErrorException();
+      throw new InternalServerErrorException(error);
     }
   }
 
@@ -59,7 +60,7 @@ export class AuthService {
       throw new UnauthorizedException('Invalid credentials');
     }
 
-    const payload = { userId: user._id };
+    const payload: TokenPayload = { userId: user._id.toString() };
     const accessToken = await this.jwtService.signAsync(payload);
     return { accessToken };
   }

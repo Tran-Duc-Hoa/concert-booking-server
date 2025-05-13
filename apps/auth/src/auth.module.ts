@@ -2,9 +2,11 @@ import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
 
+import { RabbitmqModule } from '@app/common';
 import { JwtModule } from '@nestjs/jwt';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
+import { AUTH_SERVICE } from './constants/service';
 import { UsersModule } from './users/users.module';
 
 @Module({
@@ -16,7 +18,7 @@ import { UsersModule } from './users/users.module';
       inject: [ConfigService],
       imports: [ConfigModule],
       useFactory: (configService: ConfigService) => ({
-        uri: configService.get('MONGODB_AUTH_URI'),
+        uri: configService.get('MONGODB_URI'),
       }),
     }),
     UsersModule,
@@ -27,6 +29,7 @@ import { UsersModule } from './users/users.module';
         signOptions: { expiresIn: configService.get('JWT_EXPIRES_IN') },
       }),
     }),
+    RabbitmqModule.register({ name: AUTH_SERVICE }),
   ],
   controllers: [AuthController],
   providers: [AuthService],

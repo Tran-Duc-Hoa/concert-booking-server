@@ -1,5 +1,6 @@
-import { RabbitmqService } from '@app/common';
 import { NestFactory } from '@nestjs/core';
+
+import { RabbitmqService } from '@app/common';
 import { ConcertModule } from './concert.module';
 import { CONCERT_SERVICE } from './constants/services';
 

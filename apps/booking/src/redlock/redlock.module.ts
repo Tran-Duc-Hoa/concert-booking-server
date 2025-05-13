@@ -16,29 +16,21 @@ export class RedlockModule {
       useFactory: (configService: ConfigService): RedisClients => {
         const redisClients: Redis[] = [];
         //  Use at least 3 clients for Redlock (as recommended)
-        const redisConfig1 = {
-          host: configService.get<string>('REDIS_HOST_1'), // Default to localhost
-          port: configService.get<number>('REDIS_PORT_1', 6379), // Default to 6379
-        };
-        const redisClient1 = new Redis(redisConfig1);
-        redisClient1.on('error', (err) => console.error('Redis error:', err));
-        redisClients.push(redisClient1);
+        const redisHosts = [
+          { host: 'REDIS_HOST_1', port: 'REDIS_PORT_1', defaultPort: 6379 },
+          { host: 'REDIS_HOST_2', port: 'REDIS_PORT_2', defaultPort: 6379 },
+          { host: 'REDIS_HOST_3', port: 'REDIS_PORT_3', defaultPort: 6379 },
+        ];
 
-        // const redisConfig2 = {
-        //   host: configService.get<string>('REDIS_HOST_2'), // Default to localhost
-        //   port: configService.get<number>('REDIS_PORT_2', 6380), // Default to 6379
-        // };
-        // const redisClient2 = new Redis(redisConfig2);
-        // redisClient2.on('error', (err) => console.error('Redis error:', err));
-        // redisClients.push(redisClient2);
-
-        // const redisConfig3 = {
-        //   host: configService.get<string>('REDIS_HOST_3'), // Default to localhost
-        //   port: configService.get<number>('REDIS_PORT_3', 6381), // Default to 6379
-        // };
-        // const redisClient3 = new Redis(redisConfig3);
-        // redisClient3.on('error', (err) => console.error('Redis error:', err));
-        // redisClients.push(redisClient3);
+        redisHosts.forEach(({ host, port, defaultPort }) => {
+          const redisConfig = {
+            host: configService.get<string>(host), // Default to localhost
+            port: configService.get<number>(port, defaultPort), // Default to specified port
+          };
+          const redisClient = new Redis(redisConfig);
+          redisClient.on('error', (err) => console.error('Redis error:', err));
+          redisClients.push(redisClient);
+        });
 
         return redisClients;
       },

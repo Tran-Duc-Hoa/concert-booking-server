@@ -10,15 +10,31 @@ services:
       - CONCERT_PORT=3000
       - AUTH_PORT=3001
       - BOOKING_PORT=3002
-      - MONGODB_AUTH_URI=mongodb://root:root@auth_mongodb:27017
-      - MONGODB_BOOKING_URI=mongodb://root:root@booking_mongodb:27017
       - MONGODB_CONCERT_URI=mongodb://root:root@concert_mongodb:27017
-      - JWT_SECRET=n1H/yqiB4r3mj83Vy3usBUuTUggbLyldfPIXxE3NneRem32Z5JuDQoUxFfcgNoLv8KPwLVDrEOrCCEeiwZdjpw==
-      - JWT_EXPIRES_IN=3600
       - RABBIT_MQ_URI=amqp://rabbitmq:5672
       - RABBIT_MQ_CONCERT_QUEUE=CONCERT
     depends_on:
       - concert_mongodb
+      - rabbitmq
+    volumes:
+      - .:/usr/src/app
+
+  auth:
+    build:
+      context: .
+      dockerfile: ./apps/auth/Dockerfile
+    ports:
+      - '3001:3001'
+    command: npm run start:dev auth
+    environment:
+      - PORT=3001
+      - MONGODB_URI=mongodb://root:root@auth_mongodb:27017
+      - JWT_SECRET=n1H/yqiB4r3mj83Vy3usBUuTUggbLyldfPIXxE3NneRem32Z5JuDQoUxFfcgNoLv8KPwLVDrEOrCCEeiwZdjpw==
+      - JWT_EXPIRES_IN=3600
+      - RABBIT_MQ_URI=amqp://rabbitmq:5672
+      - RABBIT_MQ_AUTH_QUEUE=AUTH
+    depends_on:
+      - auth_mongodb
       - rabbitmq
     volumes:
       - .:/usr/src/app
@@ -33,16 +49,14 @@ services:
     environment:
       - PORT=3002
       - MONGODB_BOOKING_URI=mongodb://root:root@booking_mongodb:27017
-      - JWT_SECRET=n1H/yqiB4r3mj83Vy3usBUuTUggbLyldfPIXxE3NneRem32Z5JuDQoUxFfcgNoLv8KPwLVDrEOrCCEeiwZdjpw==
-      - JWT_EXPIRES_IN=3600
       - RABBIT_MQ_URI=amqp://rabbitmq:5672
       - RABBIT_MQ_CONCERT_QUEUE=CONCERT
       - REDIS_HOST_1=redis_1
       - REDIS_PORT_1=6379
       - REDIS_HOST_2=redis_2
-      - REDIS_PORT_2=6380
+      - REDIS_PORT_2=6379
       - REDIS_HOST_3=redis_3
-      - REDIS_PORT_3=6381
+      - REDIS_PORT_3=6379
     depends_on:
       - booking_mongodb
       - rabbitmq

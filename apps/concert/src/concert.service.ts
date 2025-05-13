@@ -1,5 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { ConcertsRepository } from './concert.repository';
+import { ConcertRepository } from './concert.repository';
 import { CreateConcertDto } from './dto/create-concert.dto';
 import { Concert } from './schemas/concert.schema';
 
@@ -7,7 +7,7 @@ import { Concert } from './schemas/concert.schema';
 export class ConcertService {
   private readonly logger = new Logger(ConcertService.name);
 
-  constructor(private readonly concertRepository: ConcertsRepository) {}
+  constructor(private readonly concertRepository: ConcertRepository) {}
   getHello(): string {
     return 'Hello World!';
   }
