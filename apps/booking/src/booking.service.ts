@@ -49,6 +49,10 @@ export class BookingService {
         }),
       );
 
+      if (!seatType) {
+        throw new BadRequestException('Seat type was not found');
+      }
+
       if (seatType.availableTickets <= 0) {
         throw new BadRequestException('Tickets are sold out');
       }
@@ -110,9 +114,21 @@ export class BookingService {
         );
       }
 
-      const ticket = await this.bookingRepository.findOneAndUpdate(
+      const ticket = await this.bookingRepository.findOne({
+        _id: new ObjectId(id),
+        cancelAt: { $exists: true },
+      });
+
+      if (ticket) {
+        throw new BadRequestException('You have already cancel this ticket');
+      }
+
+      this.logger.debug(ticket);
+
+      const updatedTicket = await this.bookingRepository.findOneAndUpdate(
         {
           _id: new ObjectId(id),
+          cancelAt: { $exists: false },
         },
         {
           cancelAt: new Date(),
@@ -121,12 +137,12 @@ export class BookingService {
 
       await lastValueFrom(
         this.concertClient.emit('INCREMENT_SEAT_TYPE', {
-          seatTypeId: ticket.seatTypeId,
+          seatTypeId: updatedTicket.seatTypeId,
           amount: 1,
         }),
       );
 
-      return ticket;
+      return updatedTicket;
     } finally {
       if (lock) await this.redlockService.releaseLock(lock);
     }
