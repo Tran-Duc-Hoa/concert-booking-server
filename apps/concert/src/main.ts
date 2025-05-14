@@ -11,7 +11,7 @@ async function bootstrap() {
   app.connectMicroservice(rmqService.getOptions(CONCERT_SERVICE));
   await app.startAllMicroservices();
 
-  const port = process.env.CONCERT_PORT ?? 3000;
+  const port = process.env.PORT ?? 3000;
   await app.listen(port, () => {
     console.log(`The concert service is listening on port ${port}`);
   });

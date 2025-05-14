@@ -1,4 +1,4 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger, UnauthorizedException } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
 import { Types } from 'mongoose';
 import { RegisterDto } from '../dto/register.dto';
@@ -25,5 +25,18 @@ export class UsersService {
 
   async findById(id: string): Promise<User | null> {
     return this.usersRepository.findOne({ _id: new Types.ObjectId(id) });
+  }
+
+  async validateUser(email: string, password: string) {
+    const user = await this.usersRepository.findOne({ email });
+    if (!user) {
+      throw new UnauthorizedException('Credentials are not valid.');
+    }
+
+    const passwordIsValid = await bcrypt.compare(password, user.passwordHash);
+    if (!passwordIsValid) {
+      throw new UnauthorizedException('Credentials are not valid.');
+    }
+    return user;
   }
 }

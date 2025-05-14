@@ -8,8 +8,17 @@ export class ConcertService {
   private readonly logger = new Logger(ConcertService.name);
 
   constructor(private readonly concertRepository: ConcertRepository) {}
-  getHello(): string {
-    return 'Hello World!';
+  find() {
+    return this.concertRepository.aggregate([
+      {
+        $lookup: {
+          from: 'seattypes',
+          localField: '_id',
+          foreignField: 'concertId',
+          as: 'seatTypes',
+        },
+      },
+    ]);
   }
 
   createConcert(concert: CreateConcertDto): Promise<Concert> {

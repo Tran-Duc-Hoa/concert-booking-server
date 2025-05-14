@@ -7,13 +7,13 @@ services:
       - '3000:3000'
     command: npm run start:dev concert
     environment:
-      - CONCERT_PORT=3000
-      - AUTH_PORT=3001
-      - BOOKING_PORT=3002
+      - PORT=3000
       - MONGODB_CONCERT_URI=mongodb://root:root@concert_mongodb:27017
       - RABBIT_MQ_URI=amqp://rabbitmq:5672
       - RABBIT_MQ_CONCERT_QUEUE=CONCERT
+      - RABBIT_MQ_AUTH_QUEUE=AUTH
     depends_on:
+      - auth
       - concert_mongodb
       - rabbitmq
     volumes:
@@ -51,6 +51,7 @@ services:
       - MONGODB_BOOKING_URI=mongodb://root:root@booking_mongodb:27017
       - RABBIT_MQ_URI=amqp://rabbitmq:5672
       - RABBIT_MQ_CONCERT_QUEUE=CONCERT
+      - RABBIT_MQ_AUTH_QUEUE=AUTH
       - REDIS_HOST_1=redis_1
       - REDIS_PORT_1=6379
       - REDIS_HOST_2=redis_2
@@ -58,6 +59,7 @@ services:
       - REDIS_HOST_3=redis_3
       - REDIS_PORT_3=6379
     depends_on:
+      - auth
       - booking_mongodb
       - rabbitmq
       - redis_1
@@ -93,6 +95,7 @@ services:
     environment:
       MONGO_INITDB_ROOT_USERNAME: root
       MONGO_INITDB_ROOT_PASSWORD: root
+    # command: ['mongod', '--replSet', 'rs0', '--bind_ip_all']
     restart: always
 
   concert_mongodb:

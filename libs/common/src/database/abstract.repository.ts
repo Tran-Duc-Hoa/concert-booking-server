@@ -3,6 +3,7 @@ import {
   Connection,
   FilterQuery,
   Model,
+  PipelineStage,
   SaveOptions,
   UpdateQuery,
 } from 'mongoose';
@@ -47,7 +48,7 @@ export abstract class AbstractRepository<TDocument extends AbstractDocument> {
 
     if (!document) {
       this.logger.warn(`Document not found with filterQuery:`, filterQuery);
-      throw new NotFoundException('Document not found.');
+      throw new NotFoundException(`${this.model.name} not found.`);
     }
 
     return document as TDocument;
@@ -80,5 +81,9 @@ export abstract class AbstractRepository<TDocument extends AbstractDocument> {
     const session = await this.connection.startSession();
     session.startTransaction();
     return session;
+  }
+
+  async aggregate(pipeline: PipelineStage[]): Promise<any[]> {
+    return await this.model.aggregate(pipeline).exec();
   }
 }

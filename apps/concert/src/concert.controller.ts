@@ -1,4 +1,12 @@
-import { Body, Controller, Get, Post, ValidationPipe } from '@nestjs/common';
+import { JwtAuthGuard } from '@app/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Post,
+  UseGuards,
+  ValidationPipe,
+} from '@nestjs/common';
 import { ConcertService } from './concert.service';
 import { CreateConcertDto } from './dto/create-concert.dto';
 
@@ -7,8 +15,9 @@ export class ConcertController {
   constructor(private readonly concertService: ConcertService) {}
 
   @Get()
-  getHello(): string {
-    return this.concertService.getHello();
+  @UseGuards(JwtAuthGuard)
+  find() {
+    return this.concertService.find();
   }
 
   @Post()

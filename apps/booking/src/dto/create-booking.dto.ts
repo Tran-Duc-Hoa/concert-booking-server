@@ -4,4 +4,8 @@ export class CreateBookingDto {
   @IsString()
   @IsNotEmpty()
   seatTypeId: string;
+
+  @IsString()
+  @IsNotEmpty()
+  concertId: string;
 }

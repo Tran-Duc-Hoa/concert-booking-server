@@ -41,7 +41,7 @@ export class SeatTypesController {
     return result;
   }
 
-  @EventPattern('DECREMENT_SEAT_TYPE')
+  @EventPattern('INCREMENT_SEAT_TYPE')
   async decrementAvailableSeats(
     @Payload() data: SeatTypeMessage,
     @Ctx() context: RmqContext,
@@ -52,7 +52,7 @@ export class SeatTypesController {
         _id: new Types.ObjectId(data.seatTypeId),
       },
       {
-        $inc: { availableTickets: -1 },
+        $inc: { availableTickets: data.amount },
       },
     );
 

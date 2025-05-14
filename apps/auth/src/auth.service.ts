@@ -3,12 +3,12 @@ import {
   Injectable,
   InternalServerErrorException,
   Logger,
-  UnauthorizedException,
 } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
-import * as bcrypt from 'bcrypt';
-import { LoginDto } from './dto/login.dto';
+import { Response } from 'express';
 import { RegisterDto } from './dto/register.dto';
+import { User } from './users/user.schema';
 import { UsersService } from './users/users.service';
 
 export interface TokenPayload {
@@ -21,6 +21,7 @@ export class AuthService {
   constructor(
     private readonly usersService: UsersService,
     private readonly jwtService: JwtService,
+    private readonly configService: ConfigService,
   ) {}
 
   async register(registerDto: RegisterDto) {
@@ -46,26 +47,18 @@ export class AuthService {
     }
   }
 
-  async login(loginDto: LoginDto) {
-    const { email, password } = loginDto;
-    const user = await this.usersService.findOneByEmail(email);
-
-    if (!user) {
-      throw new UnauthorizedException('Invalid credentials');
-    }
-
-    const isPasswordValid = await bcrypt.compare(password, user.passwordHash);
-
-    if (!isPasswordValid) {
-      throw new UnauthorizedException('Invalid credentials');
-    }
-
+  async login(user: User, res: Response) {
     const payload: TokenPayload = { userId: user._id.toString() };
     const accessToken = await this.jwtService.signAsync(payload);
-    return { accessToken };
-  }
 
-  getHello(): string {
-    return 'Hello World!';
+    const expires = new Date();
+    expires.setSeconds(
+      expires.getSeconds() + +this.configService.get('JWT_EXPIRES_IN'),
+    );
+
+    res.cookie('Authentication', accessToken, {
+      httpOnly: true,
+      expires,
+    });
   }
 }

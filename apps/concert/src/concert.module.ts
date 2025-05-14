@@ -3,6 +3,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
 import * as Joi from 'joi';
 
+import { AuthModule } from '@app/common';
 import { ConcertController } from './concert.controller';
 import { ConcertRepository } from './concert.repository';
 import { ConcertService } from './concert.service';
@@ -26,6 +27,7 @@ import { SeatTypesModule } from './seat-types/seat-types.module';
     }),
     MongooseModule.forFeature([{ name: Concert.name, schema: ConcertSchema }]),
     SeatTypesModule,
+    AuthModule,
   ],
   controllers: [ConcertController],
   providers: [ConcertService, ConcertRepository],

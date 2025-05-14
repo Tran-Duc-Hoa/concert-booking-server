@@ -5,13 +5,13 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
 import * as Joi from 'joi';
 
-import { RabbitmqModule } from '@app/common';
+import { AuthModule, RabbitmqModule } from '@app/common';
 import { BookingController } from './booking.controller';
 import { BookingRepository } from './booking.repository';
 import { BookingService } from './booking.service';
 import { CONCERT_SERVICE } from './constants/service';
 import { RedlockModule } from './redlock/redlock.module';
-import { Booking, BookingSchema } from './schemas/booking.schema';
+import { BookingSchema, Ticket } from './schemas/ticket.schema';
 
 @Module({
   imports: [
@@ -31,11 +31,12 @@ import { Booking, BookingSchema } from './schemas/booking.schema';
         uri: configService.get('MONGODB_BOOKING_URI'),
       }),
     }),
-    MongooseModule.forFeature([{ name: Booking.name, schema: BookingSchema }]),
+    MongooseModule.forFeature([{ name: Ticket.name, schema: BookingSchema }]),
     RabbitmqModule.register({
       name: CONCERT_SERVICE,
     }),
     RedlockModule.register(),
+    AuthModule,
   ],
   controllers: [BookingController],
   providers: [BookingService, BookingRepository],

@@ -1,3 +1,5 @@
+export * from './auth/auth.module';
+export * from './auth/jwt-auth.guard';
 export * from './common.module';
 export * from './common.service';
 export * from './database/abstract.repository';

@@ -1,34 +1,44 @@
 import {
   Body,
   Controller,
-  Get,
   HttpCode,
   HttpStatus,
   Post,
+  Res,
+  UseGuards,
   ValidationPipe,
 } from '@nestjs/common';
+
+import { MessagePattern } from '@nestjs/microservices';
+import { Response } from 'express';
 import { AuthService } from './auth.service';
-import { LoginDto } from './dto/login.dto';
+import { CurrentUser } from './current-user.decorator';
 import { RegisterDto } from './dto/register.dto';
+import JwtAuthGuard from './guards/jwt-auth.guard';
+import { LocalAuthGuard } from './guards/local-auth.guard';
+import { User } from './users/user.schema';
 
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
-  @HttpCode(HttpStatus.CREATED)
   @Post('register')
+  @HttpCode(HttpStatus.CREATED)
   async register(@Body(ValidationPipe) registerDto: RegisterDto) {
     return this.authService.register(registerDto);
   }
 
-  @HttpCode(HttpStatus.OK)
   @Post('login')
-  login(@Body(ValidationPipe) loginDto: LoginDto) {
-    return this.authService.login(loginDto);
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @UseGuards(LocalAuthGuard)
+  login(@CurrentUser() user: User, @Res({ passthrough: true }) res: Response) {
+    return this.authService.login(user, res);
   }
 
-  @Get()
-  getHello(): string {
-    return this.authService.getHello();
+  @MessagePattern('VALIDATE_USER')
+  @UseGuards(JwtAuthGuard)
+  validateUser(@CurrentUser() user: User) {
+    console.log('user', user);
+    return user;
   }
 }

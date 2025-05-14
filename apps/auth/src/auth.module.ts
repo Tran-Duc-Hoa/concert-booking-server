@@ -7,6 +7,8 @@ import { JwtModule } from '@nestjs/jwt';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 import { AUTH_SERVICE } from './constants/service';
+import { JwtStrategy } from './strategies/jwt.strategy';
+import { LocalStrategy } from './strategies/local.strategy';
 import { UsersModule } from './users/users.module';
 
 @Module({
@@ -26,12 +28,12 @@ import { UsersModule } from './users/users.module';
       inject: [ConfigService],
       useFactory: (configService: ConfigService) => ({
         secret: configService.get('JWT_SECRET'),
-        signOptions: { expiresIn: configService.get('JWT_EXPIRES_IN') },
+        signOptions: { expiresIn: +configService.get('JWT_EXPIRES_IN') },
       }),
     }),
     RabbitmqModule.register({ name: AUTH_SERVICE }),
   ],
   controllers: [AuthController],
-  providers: [AuthService],
+  providers: [AuthService, JwtStrategy, LocalStrategy],
 })
 export class AuthServiceModule {}

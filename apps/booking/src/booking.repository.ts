@@ -4,14 +4,14 @@ import { Injectable, Logger } from '@nestjs/common';
 import { InjectConnection, InjectModel } from '@nestjs/mongoose';
 import { Connection, Model } from 'mongoose';
 
-import { Booking } from './schemas/booking.schema';
+import { Ticket } from './schemas/ticket.schema';
 
 @Injectable()
-export class BookingRepository extends AbstractRepository<Booking> {
+export class BookingRepository extends AbstractRepository<Ticket> {
   protected readonly logger = new Logger(BookingRepository.name);
 
   constructor(
-    @InjectModel(Booking.name) bookingModel: Model<Booking>,
+    @InjectModel(Ticket.name) bookingModel: Model<Ticket>,
     @InjectConnection() connection: Connection,
   ) {
     super(bookingModel, connection);
