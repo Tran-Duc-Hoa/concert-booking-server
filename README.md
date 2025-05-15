@@ -21,78 +21,180 @@
   <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
   [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
 
-## Description
-
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
-
 ## Project setup
 
-```bash
-$ npm install
-```
+To set up the project, follow these steps:
 
-## Compile and run the project
-
-```bash
-# development
-$ npm run start
-
-# watch mode
-$ npm run start:dev
-
-# production mode
-$ npm run start:prod
-```
-
-## Run tests
+1. Installing [Docker](https://docs.docker.com/engine/install/)
+2. Run the project with `docker compose`
 
 ```bash
-# unit tests
-$ npm run test
-
-# e2e tests
-$ npm run test:e2e
-
-# test coverage
-$ npm run test:cov
+docker compose up --build
 ```
 
-## Deployment
+## API Usage
 
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
+Once the application is running, you can use the following APIs:
 
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
+### Base URL
 
-```bash
-$ npm install -g @nestjs/mau
-$ mau deploy
+The base URL for all API endpoints is:
+
+```
+http://localhost:8080
 ```
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+### Endpoints
 
-## Resources
+#### 1. **Register a new user**
 
-Check out a few resources that may come in handy when working with NestJS:
+- **URL:** `/auth/register`
+- **Method:** `POST`
+- **Description:** Register a new user
+- **Body:**
+  ```json
+  {
+    "email": "admin@gmail.com",
+    "password": "123456"
+  }
+  ```
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+#### 2. **Login**
 
-## Support
+- **URL:** `/auth/login`
+- **Method:** `POST`
+- **Description:** Authenticate the user and response with `Authentication` cookie
+- **Body:**
+  ```json
+  {
+    "email": "admin@gmail.com",
+    "password": "123456"
+  }
+  ```
+- **Response**: `Authentication` cookie
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+#### 3. **Get All Concerts**
 
-## Stay in touch
+- **URL:** `/concerts/`
+- **Method:** `GET`
+- **Description:** Fetches a list of all available concerts.
+- **Response:**
+  ```json
+  [
+    {
+      "id": 1,
+      "name": "Concert Name",
+      "date": "2023-12-01",
+      "location": "Venue Name"
+    }
+  ]
+  ```
 
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+#### 4. **Create a New Concert**
 
-## License
+- **URL:** `/concerts/`
+- **Method:** `POST`
+- **Description:** Adds a new concert to the database.
+- **Request Body:**
+  ```json
+  {
+    "name": "Concert Name",
+    "startAt": "2023-12-01",
+    "address": "Venue Name",
+    "description": "Concert details here."
+  }
+  ```
+- **Response:**
+  ```json
+  {
+    "_id": "682528b8ec8b128a889f4444",
+    "name": "Concert Name",
+    "date": "2023-12-01",
+    "location": "Venue Name",
+    "description": "Concert details here."
+  }
+  ```
 
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+#### 5. **Create a seat type**
+
+- **URL:** `/concerts/seat-types`
+- **Method:** `POST`
+- **Description:** Create a seat type for a specific concert
+- **Request Body:**
+  ```json
+  {
+    "concertId": "682528b8ec8b128a889f4444",
+    "totalTickets": 200,
+    "type": "PREMIUM" | "STANDARD" | "VIP",
+    "price": 2000
+  }
+  ```
+- **Response:**
+  ```json
+  {
+    "_id": "682528b8ec8b128a889f4444",
+    "concertId": "682528b8ec8b128a889f4444",
+    "totalTickets": 200,
+    "availableTickets": 200,
+    "type": "PREMIUM",
+    "price": 2000
+  }
+  ```
+
+#### 6. **Booking a ticket**
+
+- **URL:** `/bookings/`
+- **Method:** `POST`
+- **Description:** Booking a ticket for a specific concert and seat type
+- **Request Body:**
+  ```json
+  {
+    "concertId": "682528b8ec8b128a889f4444",
+    "seatTypeId": "682528e2ec8b128a889f4446"
+  }
+  ```
+- **Response:**
+  ```json
+  {
+    "_id": "682528b8ec8b128a889f4444",
+    "concertId": "682528b8ec8b128a889f4444",
+    "seatTypeId": "682528e2ec8b128a889f4446"
+  }
+  ```
+
+#### 7. **Cancel a ticket**
+
+- **URL:** `/bookings/:ticketId/cancel`
+- **Method:** `PUT`
+- **Description:** Cancel a ticket and free up the available ticket
+- **Response:**
+  ```json
+  {
+    "_id": "682528b8ec8b128a889f4444",
+    "concertId": "682528b8ec8b128a889f4444",
+    "seatTypeId": "682528e2ec8b128a889f4446",
+    "cancelAt": "2025-05-14T23:36:02.350Z"
+  }
+  ```
+
+#### 8. **Find all tickets**
+
+- **URL:** `/bookings/`
+- **Method:** `GET`
+- **Description:** Find the list of tickets
+- **Response:**
+  ```json
+  [
+    {
+      "_id": "682528b8ec8b128a889f4444",
+      "concertId": "682528b8ec8b128a889f4444",
+      "seatTypeId": "682528e2ec8b128a889f4446",
+      "cancelAt": "2025-05-14T23:36:02.350Z"
+    },
+    {
+      "_id": "682528b8ec8b128a889f4444",
+      "concertId": "682528b8ec8b128a889f4444",
+      "seatTypeId": "682528e2ec8b128a889f4446"
+    }
+  ]
+  ```
