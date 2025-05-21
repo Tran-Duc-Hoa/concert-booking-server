@@ -18,6 +18,8 @@ services:
       - rabbitmq
     volumes:
       - .:/usr/src/app
+    networks:
+      - concert_network
 
   auth:
     build:
@@ -38,6 +40,8 @@ services:
       - rabbitmq
     volumes:
       - .:/usr/src/app
+    networks:
+      - concert_network
 
   booking:
     build:
@@ -67,11 +71,15 @@ services:
       - redis_3
     volumes:
       - .:/usr/src/app
+    networks:
+      - concert_network
 
   rabbitmq:
     image: rabbitmq
     ports:
       - 5672:5672
+    networks:
+      - concert_network
 
   auth_mongodb:
     image: mongo:latest
@@ -84,6 +92,8 @@ services:
       MONGO_INITDB_ROOT_USERNAME: root
       MONGO_INITDB_ROOT_PASSWORD: root
     restart: always
+    networks:
+      - concert_network
 
   booking_mongodb:
     image: mongo:latest
@@ -97,6 +107,8 @@ services:
       MONGO_INITDB_ROOT_PASSWORD: root
     # command: ['mongod', '--replSet', 'rs0', '--bind_ip_all']
     restart: always
+    networks:
+      - concert_network
 
   concert_mongodb:
     image: mongo:latest
@@ -109,6 +121,8 @@ services:
       MONGO_INITDB_ROOT_USERNAME: root
       MONGO_INITDB_ROOT_PASSWORD: root
     restart: always
+    networks:
+      - concert_network
 
   # Redis Service for Booking Service
   redis_1:
@@ -117,6 +131,8 @@ services:
     ports:
       - '6379:6379'
     restart: always # Add restart policy
+    networks:
+      - concert_network
 
   redis_2:
     image: redis:latest
@@ -124,13 +140,16 @@ services:
     ports:
       - '6380:6379'
     restart: always # Add restart policy
-
+    networks:
+      - concert_network
   redis_3:
     image: redis:latest
     container_name: redis_3
     ports:
       - '6381:6379'
     restart: always # Add restart policy
+    networks:
+      - concert_network
 
   nginx:
     image: nginx:latest
@@ -143,8 +162,14 @@ services:
       - auth
       - concert
       - booking
+    networks:
+      - concert_network
 
 volumes:
   auth_mongodb_data:
   booking_mongodb_data:
   concert_mongodb_data:
+
+networks:
+  concert_network:
+    driver: bridge
